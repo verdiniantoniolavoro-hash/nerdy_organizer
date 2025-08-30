@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Nerdy Organizer - Comandi Aiuto</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="tabs">
+            <button class="tab active" data-tab="commands-help">Comandi Aiuto</button>
+        </nav>
+        <main>
+            <section id="commands-help-content" class="tab-content active">
+                <div class="card">
+                    <h3><i class="fas fa-list-alt"></i> Comandi Vocali Disponibili</h3>
+                    <ul class="command-list">
+                        <li><strong>"Ciao Nerd"</strong> - Attiva l'assistente vocale</li>
+                        <li><strong>"Fine sessione"</strong> - Termina la sessione</li>
+                        <li><strong>"Nerd aggiungi impegno [testo]"</strong> - Crea un nuovo impegno (es. "Nerd aggiungi impegno Riunione di lavoro")</li>
+                        <li><strong>"Nerd aggiungi appuntamento [testo] [data]"</strong> - Crea un nuovo appuntamento (es. "Nerd aggiungi appuntamento Dentista domani alle 15")</li>
+                        <li><strong>"Nerd aggiungi scadenza [testo] [data]"</strong> - Crea una nuova scadenza (es. "Nerd aggiungi scadenza Pagare bolletta entro domani")</li>
+                        <li><strong>"Nerd aggiungi nota [testo]"</strong> - Crea una nuova nota (es. "Nerd aggiungi nota Comprare regalo per Luca")</li>
+                        <li><strong>"Nerd aggiungi alla lista [articolo]"</strong> - Aggiunge un articolo alla lista della spesa (es. "Nerd aggiungi alla lista Latte")</li>
+                        <li><strong>"Mostra impegni"</strong> - Visualizza tutti gli impegni</li>
+                        <li><strong>"Inizia registrazione"</strong> - Avvia una registrazione vocale</li>
+                        <li><strong>"Ferma registrazione"</strong> - Interrompe la registrazione corrente</li>
+                        <li><strong>"Salva registrazione"</strong> - Salva la registrazione vocale corrente</li>
+                        <li><strong>"Cambia tema [nome tema]"</strong> - Cambia il tema dell'interfaccia (es. "Cambia tema Blu")</li>
+                        <li><strong>"Esporta dati"</strong> - Salva tutti i dati su file JSON</li>
+                        <li><strong>"Importa dati"</strong> - Carica dati da file JSON</li>
+                        <li><strong>"Ripristina tutto"</strong> - Cancella tutti i dati e resetta l'app</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const tabs = document.querySelectorAll(".tab");
+            const tabContents = document.querySelectorAll(".tab-content");
+            tabs.forEach(tab => {
+                tab.addEventListener("click", () => {
+                    tabs.forEach(t => t.classList.remove("active"));
+                    tabContents.forEach(tc => tc.classList.remove("active"));
+                    tab.classList.add("active");
+                    document.getElementById(`${tab.dataset.tab}-content`).classList.add("active");
+                });
+            });
+        });
+    </script>
+</body>
+</html>

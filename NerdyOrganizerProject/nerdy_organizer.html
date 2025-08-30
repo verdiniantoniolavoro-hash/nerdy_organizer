@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content="Nerdy Organizer - Il tuo assistente vocale personale completo per gestire impegni, appuntamenti, note e lista della spesa." />
+    <title>Nerdy Organizer - Assistente Vocale Personale</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.1/main.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="default">
+    <div class="container">
+        <header role="banner">
+            <div>
+                <h1><i class="fas fa-robot"></i> Nerdy Organizer</h1>
+                <p>Il tuo assistente vocale personale completo</p>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar" aria-hidden="true">U</div>
+                <span id="userName">Utente</span>
+            </div>
+        </header>
+        <nav class="tabs" role="navigation" aria-label="Navigazione principale">
+            <button class="tab active" data-tab="dashboard" role="tab" aria-selected="true" aria-controls="dashboard-content">
+                <i class="fas fa-th-large"></i> Dashboard
+            </button>
+            <button class="tab" data-tab="calendar" role="tab" aria-selected="false" aria-controls="calendar-content">
+                <i class="fas fa-calendar-alt"></i> Calendario
+            </button>
+            <button class="tab" data-tab="tasks" role="tab" aria-selected="false" aria-controls="tasks-content">
+                <i class="fas fa-tasks"></i> Impegni
+            </button>
+            <button class="tab" data-tab="shopping" role="tab" aria-selected="false" aria-controls="shopping-content">
+                <i class="fas fa-shopping-cart"></i> Lista della Spesa
+            </button>
+            <button class="tab" data-tab="notes" role="tab" aria-selected="false" aria-controls="notes-content">
+                <i class="fas fa-sticky-note"></i> Note
+            </button>
+            <button class="tab" data-tab="recordings" role="tab" aria-selected="false" aria-controls="recordings-content">
+                <i class="fas fa-microphone"></i> Registrazioni
+            </button>
+            <button class="tab" data-tab="assistant" role="tab" aria-selected="false" aria-controls="assistant-content">
+                <i class="fas fa-assistive-listening-systems"></i> Assistente
+            </button>
+            <button class="tab" data-tab="commands-help" role="tab" aria-selected="false" aria-controls="commands-help-content">
+                <i class="fas fa-list-alt"></i> Comandi Aiuto
+            </button>
+            <button class="tab" data-tab="settings" role="tab" aria-selected="false" aria-controls="settings-content">
+                <i class="fas fa-cog"></i> Impostazioni
+            </button>
+        </nav>
+        <main role="main">
+            <!-- Dashboard -->
+            <section id="dashboard-content" class="tab-content active" role="tabpanel" aria-labelledby="tab-dashboard">
+                <div class="voice-control">
+                    <button class="voice-btn" id="voiceBtn" aria-label="Attiva assistente vocale">
+                        <i class="fas fa-microphone"></i> Attiva Nerd
+                    </button>
+                    <button class="btn" id="endSessionBtn" style="display: none; background: var(--danger);" onclick="endSession()">
+                        <i class="fas fa-power-off"></i> Fine Sessione
+                    </button>
+                    <button class="btn" id="pauseBtn" style="display: none;" onclick="togglePause()">
+                        <i class="fas fa-pause"></i> Pausa
+                    </button>
+                    <div class="input-group" id="textCommandInput" style="display: none;">
+                        <label for="commandInput" class="sr-only">Inserisci comando</label>
+                        <input type="text" id="commandInput" placeholder="Digita un comando (es. Nerd aggiungi impegno Riunione)" />
+                        <button class="btn" onclick="handleVoiceCommand(document.getElementById('commandInput').value)">Invia</button>
+                    </div>
+                    <div class="input-group" id="namePrompt" style="display: none;">
+                        <label for="nameInput">Come ti chiami?</label>
+                        <input type="text" id="nameInput" placeholder="Inserisci il tuo nome" />
+                        <button class="btn" onclick="saveUserName()">Salva Nome</button>
+                    </div>
+                    <div class="status" id="status" aria-live="polite">Pronto all'uso. Di' "Ciao Nerd" per iniziare.</div>
+                </div>
+                <div class="dashboard">
+                    <div class="card">
+                        <h3><i class="fas fa-tasks"></i> I miei Impegni</h3>
+                        <p class="suggestion">Esempio: "Nerd aggiungi impegno Riunione di lavoro"</p>
+                        <div class="list-container" id="taskList"><p>Nessun impegno</p></div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-calendar-check"></i> I miei Appuntamenti</h3>
+                        <p class="suggestion">Esempio: "Nerd aggiungi appuntamento Dentista domani alle 15"</p>
+                        <div class="list-container" id="appointmentList"><p>Nessun appuntamento</p></div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-sticky-note"></i> Le mie Note</h3>
+                        <p class="suggestion">Esempio: "Nerd aggiungi nota Comprare regalo per Luca"</p>
+                        <div class="list-container" id="noteList"><p>Nessuna nota</p></div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-shopping-cart"></i> Lista della Spesa</h3>
+                        <p class="suggestion">Esempio: "Nerd aggiungi alla lista Latte"</p>
+                        <div style="margin-bottom:15px;">
+                            <label for="shoppingInput" class="sr-only">Aggiungi articolo alla lista della spesa</label>
+                            <input id="shoppingInput" placeholder="Nuovo articolo (es. Latte)" />
+                            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                <button class="btn" onclick="addShoppingItem(document.getElementById('shoppingInput').value)">
+                                    <i class="fas fa-plus"></i> Aggiungi
+                                </button>
+                                <button class="btn" style="background: var(--dark);" onclick="document.getElementById('shoppingInput').value = ''">
+                                    <i class="fas fa-times"></i> Cancella
+                                </button>
+                            </div>
+                        </div>
+                        <div class="list-container" id="shoppingList"><p>Lista vuota</p></div>
+                    </div>
+                </div>
+            </section>
+            <!-- Calendar -->
+            <section id="calendar-content" class="tab-content" role="tabpanel" aria-labelledby="tab-calendar" hidden>
+                <div class="card">
+                    <h3><i class="fas fa-calendar-alt"></i> Calendario</h3>
+                    <p class="suggestion">Esempio: "Nerd aggiungi appuntamento Dentista domani alle 15"</p>
+                    <div class="calendar-controls" style="margin-bottom: 15px;">
+                        <button class="btn" onclick="calendar.changeView('timeGridDay')">Giorno</button>
+                        <button class="btn" onclick="calendar.changeView('timeGridWeek')">Settimana</button>
+                        <button class="btn" onclick="calendar.changeView('dayGridMonth')">Mese</button>
+                        <button class="btn" onclick="calendar.changeView('dayGridYear')">Anno</button>
+                    </div>
+                    <div id="calendarContainer"></div>
+                </div>
+            </section>
+            <!-- Tasks -->
+            <section id="tasks-content" class="tab-content" role="tabpanel" aria-labelledby="tab-tasks" hidden>
+                <div class="dashboard">
+                    <div class="card">
+                        <h3><i class="fas fa-plus-circle"></i> Nuovo Impegno</h3>
+                        <p class="suggestion">Esempio: "Nerd aggiungi impegno Riunione di lavoro"</p>
+                        <div class="input-group">
+                            <label for="taskInput">Descrizione impegno</label>
+                            <input type="text" id="taskInput" placeholder="Descrizione impegno" />
+                            <button class="btn" onclick="addTask(document.getElementById('taskInput').value)">
+                                <i class="fas fa-plus"></i> Aggiungi Impegno
+                            </button>
+                        </div>
+                        <h3><i class="fas fa-plus-circle"></i> Nuovo Appuntamento</h3>
+                        <p class="suggestion">Esempio: "Nerd aggiungi appuntamento Dentista domani alle 15"</p>
+                        <div class="input-group">
+                            <label for="appointmentInput">Descrizione appuntamento</label>
+                            <input type="text" id="appointmentInput" placeholder="Descrizione appuntamento" />
+                            <label for="appointmentDate">Data e ora</label>
+                            <input type="datetime-local" id="appointmentDate" />
+                            <button class="btn" onclick="addAppointment(document.getElementById('appointmentInput').value, document.getElementById('appointmentDate').value)">
+                                <i class="fas fa-plus"></i> Aggiungi Appuntamento
+                            </button>
+                        </div>
+                        <h3><i class="fas fa-plus-circle"></i> Nuova Scadenza</h3>
+                        <p class="suggestion">Esempio: "Nerd aggiungi scadenza Pagare bolletta entro domani"</p>
+                        <div class="input-group">
+                            <label for="deadlineInput">Descrizione scadenza</label>
+                            <input type="text" id="deadlineInput" placeholder="Descrizione scadenza" />
+                            <label for="deadlineDate">Data e ora scadenza</label>
+                            <input type="datetime-local" id="deadlineDate" />
+                            <button class="btn" onclick="addDeadline(document.getElementById('deadlineInput').value, document.getElementById('deadlineDate').value)">
+                                <i class="fas fa-plus"></i> Aggiungi Scadenza
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-tasks"></i> I miei Impegni</h3>
+                        <div class="list-container" id="fullTaskList"><p>Nessun impegno</p></div>
+                        <h3><i class="fas fa-calendar-check"></i> I miei Appuntamenti</h3>
+                        <div class="list-container" id="fullAppointmentList"><p>Nessun appuntamento</p></div>
+                        <h3><i class="fas fa-hourglass-end"></i> Le mie Scadenze</h3>
+                        <div class="list-container" id="fullDeadlineList"><p>Nessuna scadenza</p></div>
+                    </div>
+                </div>
+            </section>
+            <!-- Shopping List -->
+            <section id="shopping-content" class="tab-content" role="tabpanel" aria-labelledby="tab-shopping" hidden>
+                <div class="card">
+                    <h3><i class="fas fa-shopping-cart"></i> Lista della Spesa</h3>
+                    <p class="suggestion">Esempio: "Nerd aggiungi alla lista Latte"</p>
+                    <div class="input-group">
+                        <label for="shoppingInputFull">Aggiungi articolo</label>
+                        <input id="shoppingInputFull" placeholder="Nuovo articolo (es. Latte)" />
+                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                            <button class="btn" onclick="addShoppingItem(document.getElementById('shoppingInputFull').value)">
+                                <i class="fas fa-plus"></i> Aggiungi
+                            </button>
+                            <button class="btn" style="background: var(--dark);" onclick="document.getElementById('shoppingInputFull').value = ''">
+                                <i class="fas fa-times"></i> Cancella
+                            </button>
+                        </div>
+                    </div>
+                    <div class="list-container" id="fullShoppingList"><p>Lista vuota</p></div>
+                </div>
+            </section>
+            <!-- Notes -->
+            <section id="notes-content" class="tab-content" role="tabpanel" aria-labelledby="tab-notes" hidden>
+                <div class="dashboard">
+                    <div class="card">
+                        <h3><i class="fas fa-plus-circle"></i> Nuova Nota</h3>
+                        <p class="suggestion">Esempio: "Nerd aggiungi nota Comprare regalo per Luca"</p>
+                        <div class="input-group">
+                            <label for="noteInput">Titolo nota</label>
+                            <input type="text" id="noteInput" placeholder="Titolo nota" />
+                            <label for="noteContent">Contenuto nota</label>
+                            <textarea id="noteContent" rows="5" placeholder="Contenuto nota"></textarea>
+                            <button class="btn" onclick="addNote(document.getElementById('noteInput').value)">
+                                <i class="fas fa-plus"></i> Aggiungi Nota
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-sticky-note"></i> Le mie Note</h3>
+                        <div class="list-container" id="fullNoteList"><p>Nessuna nota</p></div>
+                    </div>
+                </div>
+            </section>
+            <!-- Recordings -->
+            <section id="recordings-content" class="tab-content" role="tabpanel" aria-labelledby="tab-recordings" hidden>
+                <div class="dashboard">
+                    <div class="card">
+                        <h3><i class="fas fa-microphone"></i> Registratore Vocale</h3>
+                        <p class="suggestion">Esempio: "Inizia registrazione"</p>
+                        <div class="status" id="recorderStatus" aria-live="polite">Pronto a registrare</div>
+                        <div class="recorder-controls">
+                            <button class="recorder-btn record-btn" id="recordBtn" aria-label="Inizia registrazione"><i class="fas fa-circle"></i> Registra</button>
+                            <button class="recorder-btn stop-btn" id="stopBtn" disabled aria-label="Ferma registrazione"><i class="fas fa-stop"></i> Stop</button>
+                            <button class="recorder-btn play-btn" id="playBtn" disabled aria-label="Ascolta registrazione"><i class="fas fa-play"></i> Ascolta</button>
+                        </div>
+                        <div class="input-group">
+                            <label for="recordingName">Nome registrazione</label>
+                            <input type="text" id="recordingName" placeholder="Nome registrazione" />
+                            <button class="btn" id="saveBtn" disabled><i class="fas fa-save"></i> Salva Registrazione</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-list"></i> Le mie Registrazioni</h3>
+                        <div class="list-container" id="recordingsList"><p>Nessuna registrazione</p></div>
+                    </div>
+                </div>
+            </section>
+            <!-- Commands Help -->
+            <section id="commands-help-content" class="tab-content" role="tabpanel" aria-labelledby="tab-commands-help" hidden>
+                <div class="card">
+                    <h3><i class="fas fa-list-alt"></i> Comandi Vocali Disponibili</h3>
+                    <ul class="command-list">
+                        <li><strong>"Ciao Nerd"</strong> - Attiva l'assistente vocale</li>
+                        <li><strong>"Fine sessione"</strong> - Termina la sessione</li>
+                        <li><strong>"Nerd aggiungi impegno [testo]"</strong> - Crea un nuovo impegno (es. "Nerd aggiungi impegno Riunione di lavoro")</li>
+                        <li><strong>"Nerd aggiungi appuntamento [testo] [data]"</strong> - Crea un nuovo appuntamento (es. "Nerd aggiungi appuntamento Dentista domani alle 15")</li>
+                        <li><strong>"Nerd aggiungi scadenza [testo] [data]"</strong> - Crea una nuova scadenza (es. "Nerd aggiungi scadenza Pagare bolletta entro domani")</li>
+                        <li><strong>"Nerd aggiungi nota [testo]"</strong> - Crea una nuova nota (es. "Nerd aggiungi nota Comprare regalo per Luca")</li>
+                        <li><strong>"Nerd aggiungi alla lista [articolo]"</strong> - Aggiunge un articolo alla lista della spesa (es. "Nerd aggiungi alla lista Latte")</li>
+                        <li><strong>"Mostra impegni"</strong> - Visualizza tutti gli impegni</li>
+                        <li><strong>"Inizia registrazione"</strong> - Avvia una registrazione vocale</li>
+                        <li><strong>"Ferma registrazione"</strong> - Interrompe la registrazione corrente</li>
+                        <li><strong>"Salva registrazione"</strong> - Salva la registrazione vocale corrente</li>
+                        <li><strong>"Cambia tema [nome tema]"</strong> - Cambia il tema dell'interfaccia (es. "Cambia tema Blu")</li>
+                        <li><strong>"Esporta dati"</strong> - Salva tutti i dati su file JSON</li>
+                        <li><strong>"Importa dati"</strong> - Carica dati da file JSON</li>
+                        <li><strong>"Ripristina tutto"</strong> - Cancella tutti i dati e resetta l'app</li>
+                    </ul>
+                </div>
+            </section>
+            <!-- Assistant -->
+            <section id="assistant-content" class="tab-content" role="tabpanel" aria-labelledby="tab-assistant" hidden>
+                <div class="dashboard">
+                    <div class="card">
+                        <h3><i class="fas fa-comments"></i> Conversa con Nerd</h3>
+                        <div class="conversation" id="conversation">
+                            <div class="message nerdy-message">Ciao! Sono Nerd, il tuo assistente virtuale. Come posso aiutarti?</div>
+                        </div>
+                        <div class="voice-control">
+                            <button class="voice-btn" id="conversationBtn" aria-label="Parla con l'assistente">
+                                <i class="fas fa-microphone"></i> Parla con Nerd
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-book"></i> Legenda Comandi Principali</h3>
+                        <ul class="command-legend">
+                            <li><strong>"Ciao Nerd"</strong> - Attiva l'assistente vocale</li>
+                            <li><strong>"Fine sessione"</strong> - Termina la sessione</li>
+                            <li><strong>"Nerd aggiungi impegno [testo]"</strong> - Crea un nuovo impegno</li>
+                            <li><strong>"Nerd aggiungi appuntamento [testo] [data]"</strong> - Crea un nuovo appuntamento</li>
+                            <li><strong>"Nerd aggiungi scadenza [testo] [data]"</strong> - Crea una nuova scadenza</li>
+                            <li><strong>"Nerd aggiungi nota [testo]"</strong> - Crea una nuova nota</li>
+                            <li><strong>"Nerd aggiungi alla lista [articolo]"</strong> - Aggiunge un articolo alla lista della spesa</li>
+                            <li><strong>"Mostra impegni"</strong> - Visualizza tutti gli impegni</li>
+                            <li><strong>"Inizia registrazione"</strong> - Avvia una registrazione vocale</li>
+                            <li><strong>"Ferma registrazione"</strong> - Interrompe la registrazione corrente</li>
+                            <li><strong>"Salva registrazione"</strong> - Salva la registrazione vocale corrente</li>
+                            <li><strong>"Cambia tema [nome tema]"</strong> - Cambia il tema dell'interfaccia</li>
+                            <li><strong>"Esporta dati"</strong> - Salva tutti i dati su file JSON</li>
+                            <li><strong>"Importa dati"</strong> - Carica dati da file JSON</li>
+                            <li><strong>"Ripristina tutto"</strong> - Cancella tutti i dati e resetta l'app</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            <!-- Settings -->
+            <section id="settings-content" class="tab-content" role="tabpanel" aria-labelledby="tab-settings" hidden>
+                <div class="dashboard">
+                    <div class="card">
+                        <h3><i class="fas fa-user-cog"></i> Impostazioni Utente</h3>
+                        <div class="input-group">
+                            <label for="userNameInput">Il tuo nome</label>
+                            <input type="text" id="userNameInput" placeholder="Inserisci il tuo nome" />
+                            <button class="btn" onclick="saveUserName()">Salva Nome</button>
+                        </div>
+                        <div class="input-group">
+                            <label for="themeSelect">Tema dell'interfaccia</label>
+                            <select id="themeSelect">
+                                <option value="default">Default</option>
+                                <option value="blue">Blu</option>
+                                <option value="green">Verde</option>
+                                <option value="purple">Viola</option>
+                                <option value="dark">Scuro</option>
+                            </select>
+                            <button class="btn" onclick="changeTheme()">Cambia Tema</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-database"></i> Backup Dati</h3>
+                        <div class="input-group">
+                            <button class="btn" onclick="exportData()">Esporta Tutti i Dati</button>
+                            <button class="btn" onclick="importData()">Importa Dati</button>
+                            <input type="file" id="importFile" style="display:none;" accept=".json"/>
+                        </div>
+                        <h3><i class="fas fa-trash-restore"></i> Ripristino</h3>
+                        <div class="input-group">
+                            <button class="btn" style="background:#e74c3c;" onclick="resetData()">Ripristina Tutto</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <div class="voice-feedback" id="voiceFeedback" aria-hidden="true"><i class="fas fa-microphone"></i></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.1/main.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.1/locale/it.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

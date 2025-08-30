@@ -1,0 +1,13 @@
+{
+    "tasks": ["Riunione di lavoro", "Chiamare cliente"],
+    "appointments": [
+        {"title": "Dentista", "date": "2025-08-31T15:00:00.000Z"},
+        {"title": "Incontro con team", "date": "2025-09-01T10:00:00.000Z"}
+    ],
+    "deadlines": [
+        {"title": "Pagare bolletta", "date": "2025-08-31T23:59:00.000Z"}
+    ],
+    "notes": ["Comprare regalo per Luca", "Idee per progetto"],
+    "shopping": ["Latte", "Pane", "Uova"],
+    "userName": "Utente"
+}
